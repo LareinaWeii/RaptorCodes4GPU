@@ -113,12 +113,12 @@ int r10_build_Half_submat(unsigned int K, unsigned int S, unsigned int H,
                           gf2matrix *A) {
   uint32_t g[4000];
   generate_gray_seq(&g[0]);
-  uint H_ = ceil((float)H / 2.0);
+  int H_ = ceil((float)H / 2.0);
   int n_bits = (int)sizeof(*g) * 8;
   size_t n_words = 4000;
   uint32_t m[n_words];
 
-  uint j = 0;
+  int j = 0;
   for (size_t i = 0; i < n_words; i++)
     if (__builtin_popcount(g[i]) == H_) {
       m[j] = g[i];
@@ -126,8 +126,8 @@ int r10_build_Half_submat(unsigned int K, unsigned int S, unsigned int H,
     }
 
   // Build the G_HALF submatrix
-  for (uint h = 0; h < H; h++) {
-    for (uint j = 0; j < K + S; j++) {
+  for (int h = 0; h < H; h++) {
+    for (int j = 0; j < K + S; j++) {
       if (m[j] & (1UL << h)) {
         set_entry(A, h + S, j, 1);
       }
@@ -155,7 +155,7 @@ int r10_build_LT_submat(uint32_t K, uint32_t S, uint32_t H, Raptor10 *obj,
 
     set_entry(A, i + S + H, b, 1);
 
-    for (uint j = 1; j <= j_max; j++) {
+    for (int j = 1; j <= j_max; j++) {
       b = (b + a) % L_;
 
       while (b >= L)
@@ -188,7 +188,7 @@ void r10_build_LT_mat(uint32_t N, Raptor10 *obj, gf2matrix *G_LT,
 
     set_entry(G_LT, i, b, 1);
 
-    for (uint j = 1; j <= j_max; j++) {
+    for (int j = 1; j <= j_max; j++) {
       b = (b + a) % L_;
 
       while (b >= obj->L)
@@ -258,14 +258,14 @@ void r10_compute_params(Raptor10 *obj) {
 void r10_multiplication(Raptor10 *obj, gf2matrix *A, uint8_t *block,
                         uint8_t *res_block) {
   int beg = 0;
-  for (uint j = 0; j < get_ncols(A); j++)
-    for (uint i = 0; i < get_nrows(A); i++)
+  for (int j = 0; j < get_ncols(A); j++)
+    for (int i = 0; i < get_nrows(A); i++)
       if (get_entry(A, i, j)) {
         if (!beg)
-          for (uint t = 0; t < obj->T; t++)
+          for (int t = 0; t < obj->T; t++)
             res_block[i + t] = block[j + t];
         else
-          for (uint t = 0; t < obj->T; t++)
+          for (int t = 0; t < obj->T; t++)
             res_block[i + t] = res_block[i + t] ^ block[j + t];
       }
 }
